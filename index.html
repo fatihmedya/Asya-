@@ -6,16 +6,16 @@
   <title>Asya'nın Ağacı</title>
   <style>
     :root {
-      --bg-dark: #07131a;
-      --bg-mid: #0c222d;
-      --panel: rgba(11, 29, 38, 0.9);
-      --panel-soft: rgba(255, 255, 255, 0.06);
-      --border: rgba(255, 255, 255, 0.14);
-      --text: #f5f9fc;
-      --muted: #b7cbd6;
-      --accent: #e03c4b;
-      --accent-hover: #c92d3c;
-      --gold: #f4c452;
+      --bg-top: #0b2430;
+      --bg-mid: #0a1b24;
+      --bg-bottom: #050e14;
+      --card-bg: #14332b;
+      --card-border: rgba(255, 255, 255, 0.14);
+      --text: #f6faf8;
+      --muted: #b7cbc4;
+      --crimson: #c93b47;
+      --crimson-hover: #b22f3a;
+      --gold: #f3c453;
     }
 
     * {
@@ -27,7 +27,7 @@
 
     body {
       min-height: 100vh;
-      background: radial-gradient(circle at 50% 18%, #153545 0%, var(--bg-mid) 48%, var(--bg-dark) 100%);
+      background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-mid) 52%, var(--bg-bottom) 100%);
       color: var(--text);
       display: flex;
       flex-direction: column;
@@ -36,441 +36,1297 @@
       position: relative;
     }
 
-    body.theme-gece { background: radial-gradient(circle at 50% 15%, #16223d 0%, #0b1326 55%, #050914 100%); }
-    body.theme-karli { background: radial-gradient(circle at 50% 20%, #264658 0%, #112734 55%, #071219 100%); }
-
-    #snow-canvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-
-    .app-shell {
-      position: relative; z-index: 2; width: 100%; max-width: 460px; min-height: 100vh;
-      padding: 18px 16px 28px; display: flex; flex-direction: column; justify-content: space-between; gap: 16px;
+    body.theme-gece {
+      --bg-top: #122142;
+      --bg-mid: #0b1429;
+      --bg-bottom: #050914;
     }
 
-    .top-bar, .music-card {
-      background: var(--panel); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 18px;
+    body.theme-karli {
+      --bg-top: #1f4152;
+      --bg-mid: #102633;
+      --bg-bottom: #071219;
     }
-    .top-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; }
-    .brand-title { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; letter-spacing: .2px; }
-    .top-actions, .music-controls { display: flex; align-items: center; gap: 8px; }
-    .icon-btn {
-      background: var(--panel-soft); border: 1px solid var(--border); color: var(--text); border-radius: 12px;
-      height: 36px; padding: 0 11px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-      font-size: 13px; font-weight: 600; cursor: pointer; transition: transform .15s ease, background .15s ease;
-    }
-    .icon-btn:hover { background: rgba(255,255,255,.12); transform: translateY(-1px); }
 
-    .music-card { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
-    .music-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-    .music-meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-    .music-label { font-size: 11px; color: var(--gold); font-weight: 700; text-transform: uppercase; letter-spacing: .6px; }
-    .music-name { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .music-sub { font-size: 12px; color: var(--muted); }
-    .music-controls { flex-shrink: 0; }
-    .play-btn {
-      background: var(--accent); color: #fff; border: none; border-radius: 12px; padding: 8px 13px;
-      font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+    #snow-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
     }
-    .play-btn:hover { background: var(--accent-hover); }
-    .yt-hidden-wrap { width: 100%; height: 0; overflow: hidden; border-radius: 12px; transition: height .25s ease; }
-    .yt-hidden-wrap.open { height: 170px; margin-top: 2px; }
-    .yt-hidden-wrap iframe { width: 100%; height: 170px; border: 0; border-radius: 12px; }
 
-    .hero-header { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 2px; }
-    .hero-title { font-size: 28px; font-weight: 800; letter-spacing: -.3px; display: inline-flex; align-items: center; gap: 8px; }
-    .msg-counter { font-size: 14px; color: var(--muted); background: rgba(255,255,255,.08); border: 1px solid var(--border); padding: 4px 12px; border-radius: 999px; font-weight: 600; }
+    .page-wrap {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 450px;
+      min-height: 100vh;
+      padding: 16px 16px 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+    }
 
-    .tree-stage { position: relative; width: 100%; height: 390px; display: flex; align-items: center; justify-content: center; margin: 4px 0; }
-    .ground-glow {
-      position: absolute; bottom: 8px; width: 86%; height: 68px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(255,255,255,.65) 0%, rgba(220,236,248,.25) 55%, transparent 75%);
-      filter: blur(8px); pointer-events: none;
+    .top-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
     }
-    .white-tree { position: relative; width: 270px; height: 340px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; z-index: 2; }
-    .topper { position: absolute; top: 4px; font-size: 36px; z-index: 6; filter: drop-shadow(0 0 12px rgba(255,255,255,.85)); }
-    .tree-tier { position: relative; width: 0; height: 0; border-style: solid; filter: drop-shadow(0 8px 14px rgba(0,0,0,.32)); }
-    .tier-1 { border-width: 0 58px 82px 58px; border-color: transparent transparent #fff transparent; z-index: 4; margin-bottom: -24px; }
-    .tier-2 { border-width: 0 84px 104px 84px; border-color: transparent transparent #f1f6fa transparent; z-index: 3; margin-bottom: -28px; }
-    .tier-3 { border-width: 0 112px 128px 112px; border-color: transparent transparent #e3edf5 transparent; z-index: 2; }
-    .trunk { width: 44px; height: 40px; background: linear-gradient(180deg,#98a8b5 0%,#6d7e8c 100%); border-radius: 0 0 10px 10px; margin-top: -2px; z-index: 1; box-shadow: inset 0 4px 8px rgba(0,0,0,.25); }
-    .ornaments-layer { position: absolute; inset: 0; z-index: 7; pointer-events: none; }
-    .ornament-pin {
-      position: absolute; transform: translate(-50%,-50%); pointer-events: auto; background: rgba(255,255,255,.92);
-      border: 2px solid rgba(255,255,255,.95); border-radius: 999px; padding: 4px 8px 4px 6px;
-      display: inline-flex; align-items: center; gap: 4px; cursor: pointer; box-shadow: 0 6px 16px rgba(0,0,0,.28); transition: transform .16s ease;
-    }
-    .ornament-pin:hover { transform: translate(-50%,-50%) scale(1.12); }
-    .ornament-emoji { font-size: 20px; line-height: 1; }
-    .ornament-sender { font-size: 11px; font-weight: 700; color: #0e222d; max-width: 72px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    .cta-group { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-    .primary-btn {
-      width: 100%; background: var(--accent); color: #fff; border: none; border-radius: 16px; padding: 15px 20px;
-      font-size: 16px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
-      gap: 8px; box-shadow: 0 10px 24px rgba(224,60,75,.35); transition: transform .15s ease, background .15s ease;
+    .top-pill {
+      background: rgba(20, 51, 43, 0.78);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
-    .primary-btn:hover { background: var(--accent-hover); transform: translateY(-1px); }
-    .secondary-btn {
-      width: 100%; background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 14px;
-      padding: 12px 16px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background .15s ease;
-    }
-    .secondary-btn:hover { background: rgba(255,255,255,.1); }
-    .link-btn { background: none; border: none; color: var(--muted); text-decoration: underline; font-size: 14px; font-weight: 600; cursor: pointer; padding: 4px 8px; }
-    .link-btn:hover { color: var(--text); }
-    .footer-credit { margin-top: 8px; text-align: center; font-size: 12px; color: var(--muted); letter-spacing: .2px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,.08); }
 
-    .modal-backdrop {
-      position: fixed; inset: 0; background: rgba(4,11,16,.78); backdrop-filter: blur(8px); z-index: 30;
-      display: none; align-items: center; justify-content: center; padding: 16px;
+    .music-bar {
+      background: rgba(20, 51, 43, 0.82);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
-    .modal-backdrop.active { display: flex; }
-    .modal-card {
-      width: 100%; max-width: 430px; max-height: 90vh; overflow-y: auto; background: #0d232e;
-      border: 1px solid var(--border); border-radius: 22px; padding: 18px; display: flex; flex-direction: column;
-      gap: 14px; box-shadow: 0 24px 60px rgba(0,0,0,.55);
-    }
-    .modal-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-    .modal-title { font-size: 17px; font-weight: 700; }
-    .step-bar { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px; }
-    .step-pill { height: 6px; border-radius: 999px; background: rgba(255,255,255,.14); }
-    .step-pill.done { background: var(--gold); }
-    .section-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; display: block; }
-    .ornament-grid { display: grid; grid-template-columns: repeat(6,1fr); gap: 8px; }
-    .choice-box { background: rgba(255,255,255,.06); border: 1.5px solid transparent; border-radius: 12px; padding: 9px 4px; font-size: 22px; text-align: center; cursor: pointer; transition: transform .12s ease,border-color .12s ease; }
-    .choice-box:hover { transform: translateY(-1px); }
-    .choice-box.selected { border-color: var(--gold); background: rgba(244,196,82,.16); }
-    .letter-paper { background: #fbf8f1; color: #182229; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: inset 0 0 0 1px rgba(24,34,41,.08); }
-    .letter-greeting { font-weight: 700; font-size: 15px; color: #0f2430; }
-    textarea.letter-input, input.text-input, select.select-input { width: 100%; background: rgba(255,255,255,.08); border: 1px solid var(--border); color: var(--text); border-radius: 12px; padding: 10px 12px; font-size: 14px; outline: none; }
-    textarea.letter-input { background: transparent; color: #182229; border: 1px dashed rgba(24,34,41,.25); min-height: 110px; resize: vertical; line-height: 1.5; }
-    .letter-sign { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #182229; }
-    .letter-sign input { flex: 1; background: rgba(24,34,41,.06); border: 1px solid rgba(24,34,41,.16); border-radius: 8px; padding: 6px 10px; color: #182229; font-size: 13px; }
-    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; }
-    .chip-btn { background: rgba(255,255,255,.08); border: 1px solid var(--border); color: var(--text); border-radius: 999px; padding: 7px 12px; font-size: 12px; font-weight: 600; cursor: pointer; }
-    .chip-btn.active { border-color: var(--gold); background: rgba(244,196,82,.18); color: #fff; }
-    .song-gift-box { background: rgba(255,255,255,.06); border: 1px solid var(--border); border-radius: 14px; padding: 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-    .status-center { text-align: center; padding: 16px 8px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-    .spinner { width: 38px; height: 38px; border: 4px solid rgba(255,255,255,.18); border-top-color: var(--gold); border-radius: 50%; animation: spin .9s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .read-card { background: #fbf8f1; color: #182229; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
-    .read-meta { font-size: 12px; color: #4f626e; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
-    .read-body { font-size: 15px; line-height: 1.55; white-space: pre-wrap; }
 
-    @media (max-width: 380px) {
-      .app-shell { padding-left: 12px; padding-right: 12px; }
-      .hero-title { font-size: 24px; }
-      .tree-stage { height: 350px; }
-      .white-tree { transform: scale(.9); }
-      .music-controls { gap: 5px; }
-      .icon-btn { padding: 0 8px; }
+    .music-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .music-info {
+      min-width: 0;
+    }
+
+    .music-title {
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .music-state {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .music-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .mini-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .mini-btn.active-song {
+      background: var(--crimson);
+      border-color: var(--crimson);
+    }
+
+    .yt-box {
+      height: 0;
+      overflow: hidden;
+      border-radius: 12px;
+      transition: height 0.25s ease;
+    }
+
+    .yt-box.open {
+      height: 155px;
+    }
+
+    .yt-box iframe {
+      width: 100%;
+      height: 155px;
+      border: 0;
+      border-radius: 12px;
+    }
+
+    .hero-block {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .hero-name {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+
+    .hero-count {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .tree-box {
+      position: relative;
+      width: 100%;
+      max-width: 345px;
+      height: 392px;
+      margin: 2px auto;
+      border-radius: 26px;
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 20px 44px rgba(0, 0, 0, 0.48);
+      background: #0d232e;
+    }
+
+    .tree-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+
+    .tree-topper {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 32px;
+      z-index: 5;
+      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.85));
+      pointer-events: none;
+    }
+
+    .ornaments-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 6;
+      pointer-events: none;
+    }
+
+    .ornament-item {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      pointer-events: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .ornament-item:hover {
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+
+    .ornament-icon {
+      font-size: 25px;
+      line-height: 1;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+    }
+
+    .ornament-tag {
+      background: rgba(15, 28, 34, 0.84);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 7px;
+      padding: 1px 6px;
+      font-size: 10px;
+      font-weight: 700;
+      max-width: 76px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .bottom-cta {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .red-btn {
+      width: 100%;
+      background: var(--crimson);
+      color: #ffffff;
+      border: none;
+      border-radius: 14px;
+      padding: 15px 18px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 10px 24px rgba(201, 59, 71, 0.35);
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
+
+    .red-btn:hover {
+      background: var(--crimson-hover);
+      transform: translateY(-1px);
+    }
+
+    .ghost-link {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: underline;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .footer-sign {
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .overlay-screen {
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 22, 19, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 30;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 18px 16px 28px;
+      overflow-y: auto;
+    }
+
+    .overlay-screen.active {
+      display: flex;
+    }
+
+    .flow-container {
+      width: 100%;
+      max-width: 430px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin: auto 0;
+    }
+
+    .flow-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .flow-title {
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .step-progress {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .step-line {
+      width: 34px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .step-line.on {
+      background: var(--gold);
+    }
+
+    .paper-card {
+      background: #f9f6ef;
+      color: #172227;
+      border-radius: 18px;
+      padding: 18px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .paper-to {
+      font-size: 16px;
+      font-weight: 800;
+      color: #112229;
+    }
+
+    .ruled-textarea {
+      width: 100%;
+      min-height: 155px;
+      border: none;
+      background-color: transparent;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 27px,
+        rgba(23, 34, 39, 0.16) 27px,
+        rgba(23, 34, 39, 0.16) 28px
+      );
+      line-height: 28px;
+      font-size: 15px;
+      color: #172227;
+      resize: vertical;
+      outline: none;
+    }
+
+    .paper-from-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(23, 34, 39, 0.12);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .paper-from-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 14px;
+      font-weight: 700;
+      color: #172227;
+      outline: none;
+    }
+
+    .char-count {
+      font-size: 11px;
+      color: #5b6d75;
+      font-weight: 600;
+    }
+
+    .toggle-row {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .toggle-sub {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .switch-btn {
+      width: 46px;
+      height: 26px;
+      border-radius: 999px;
+      border: none;
+      background: rgba(255, 255, 255, 0.2);
+      position: relative;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.2s ease;
+    }
+
+    .switch-btn.on {
+      background: var(--gold);
+    }
+
+    .switch-btn::after {
+      content: "";
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #ffffff;
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      transition: transform 0.2s ease;
+    }
+
+    .switch-btn.on::after {
+      transform: translateX(20px);
+    }
+
+    .selected-preview-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .selected-big-emoji {
+      font-size: 46px;
+      line-height: 1.1;
+    }
+
+    .selected-label {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .free-ornaments-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .free-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .free-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+    }
+
+    .orn-select-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1.5px solid transparent;
+      border-radius: 12px;
+      padding: 8px 4px;
+      font-size: 24px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .orn-select-btn.picked {
+      border-color: var(--gold);
+      background: rgba(243, 196, 83, 0.18);
+    }
+
+    .target-pill {
+      align-self: center;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--card-border);
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .meta-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .meta-chip {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--card-border);
+      border-radius: 999px;
+      padding: 6px 11px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .song-row-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .center-status {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 20px 8px;
+    }
+
+    .ring-loader {
+      width: 44px;
+      height: 44px;
+      border: 4px solid rgba(255, 255, 255, 0.18);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .dark-input,
+    .dark-select {
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 11px 12px;
+      font-size: 14px;
+      outline: none;
     }
   </style>
 </head>
 <body>
   <canvas id="snow-canvas"></canvas>
-  <main class="app-shell">
+
+  <div class="page-wrap">
     <div>
-      <header class="top-bar">
-        <div class="brand-title"><span>❄️</span><span id="header-tree-name">Asya'nın Ağacı</span></div>
-        <div class="top-actions"><button class="icon-btn" id="open-customize-btn" type="button">Ağacı Düzenle</button></div>
-      </header>
-
-      <section class="music-card" aria-label="Müzik Çalar">
-        <div class="music-row">
-          <div class="music-meta">
-            <span class="music-label">Şarkı</span><span class="music-name">Carol of the Bells</span>
-            <span class="music-sub" id="music-status">Oynatılmaya hazır • Dokununca başlar</span>
-          </div>
-          <div class="music-controls">
-            <button class="play-btn" id="toggle-play-btn" type="button">▶ Oynat</button>
-            <button class="icon-btn" id="toggle-mute-btn" type="button">🔊</button>
-            <button class="icon-btn" id="toggle-player-box-btn" type="button">🎬</button>
-          </div>
-        </div>
-        <div class="yt-hidden-wrap" id="yt-player-wrap"><div id="yt-player"></div></div>
-      </section>
-
-      <div class="hero-header">
-        <h1 class="hero-title"><span id="main-tree-title">Asya'nın Ağacı</span><span>❄️</span></h1>
-        <div class="msg-counter" id="message-count-badge">0 mesaj</div>
+      <div class="top-strip">
+        <button class="top-pill" id="open-custom-btn" type="button">⚙️ Ağacı Düzenle</button>
+        <button class="top-pill" id="toggle-music-panel-btn" type="button">🎵 Müzik</button>
       </div>
 
-      <section class="tree-stage" aria-label="Beyaz Ağaç">
-        <div class="ground-glow"></div>
-        <div class="white-tree" id="white-tree">
-          <div class="topper" id="tree-topper">⭐</div>
-          <div class="tree-tier tier-1"></div><div class="tree-tier tier-2"></div><div class="tree-tier tier-3"></div>
-          <div class="trunk"></div><div class="ornaments-layer" id="ornaments-layer"></div>
+      <div class="music-bar" id="music-bar" style="margin-top: 8px;">
+        <div class="music-top">
+          <div class="music-info">
+            <div class="music-title">Carol of the Bells</div>
+            <div class="music-state" id="music-status-text">Ekrana dokunduğunda çalmaya başlar</div>
+          </div>
+          <div class="music-actions">
+            <button class="mini-btn" id="play-pause-btn" type="button">▶ Çal</button>
+            <button class="mini-btn" id="mute-btn" type="button">🔊</button>
+            <button class="mini-btn" id="video-toggle-btn" type="button">🎬</button>
+          </div>
         </div>
-      </section>
+        <div class="yt-box" id="yt-box">
+          <div id="yt-player"></div>
+        </div>
+      </div>
 
-      <div class="cta-group">
-        <button class="primary-btn" id="open-message-btn" type="button">Mesaj bırak →</button>
-        <button class="link-btn" id="open-new-tree-btn" type="button">Ağacımı oluştur</button>
+      <div class="hero-block" style="margin-top: 10px;">
+        <h1 class="hero-name" id="tree-title">Asya'nın Ağacı</h1>
+        <div class="hero-count" id="msg-count-label">0 mesaj</div>
+      </div>
+
+      <div class="tree-box">
+        <img src="agac.jpg" alt="Asya'nın Ağacı" class="tree-photo" />
+        <div class="tree-topper" id="tree-topper">🔔</div>
+        <div class="ornaments-layer" id="ornaments-layer"></div>
+      </div>
+
+      <div class="bottom-cta">
+        <button class="red-btn" id="start-msg-btn" type="button">Mesaj bırak →</button>
+        <button class="ghost-link" id="reset-tree-btn" type="button">Ağacımı özelleştir</button>
       </div>
     </div>
-    <footer class="footer-credit">Asya Özdemir için oluşturuldu • Design By Fatih S</footer>
-  </main>
 
-  <div class="modal-backdrop" id="message-modal" role="dialog" aria-modal="true">
-    <div class="modal-card">
-      <div class="modal-top"><h2 class="modal-title" id="msg-modal-title">Asya için bir mesaj</h2><button class="icon-btn" id="close-message-modal" type="button">✕</button></div>
-      <div class="step-bar"><div class="step-pill done" id="step-pill-1"></div><div class="step-pill" id="step-pill-2"></div></div>
-      <div id="msg-step-1">
-        <span class="section-label">Ağaca asılacak süsü seç</span><div class="ornament-grid" id="ornament-picker"></div>
-        <div style="margin-top:14px"><button class="primary-btn" id="to-step-2-btn" type="button">Devam et →</button></div>
+    <footer class="footer-sign">
+      Asya Özdemir için oluşturuldu • Desing By Fatih S
+    </footer>
+  </div>
+
+  <!-- Mesaj Oluşturma Akışı (1/3 -> 2/3 -> 3/3 -> Asılıyor -> Asıldı) -->
+  <div class="overlay-screen" id="msg-flow-screen">
+    <div class="flow-container">
+      <div class="flow-header">
+        <button class="top-pill" id="flow-back-btn" type="button">←</button>
+        <div class="flow-title" id="flow-header-title">Asya için bir mesaj</div>
+        <button class="top-pill" id="flow-close-btn" type="button">✕</button>
       </div>
-      <div id="msg-step-2" style="display:none">
-        <div class="letter-paper">
-          <div class="letter-greeting" id="letter-greeting">Sevgili Asya,</div>
-          <textarea class="letter-input" id="letter-text" placeholder="Yeni yıl dileğini veya güzel notunu buraya yaz..."></textarea>
-          <div class="letter-sign"><span>Kimden:</span><input type="text" id="letter-sender" value="Anonim" maxlength="28" /></div>
+
+      <div class="step-progress" id="step-indicator">
+        <span class="step-line on" id="line-1"></span>
+        <span class="step-line" id="line-2"></span>
+        <span class="step-line" id="line-3"></span>
+        <span id="step-num-text" style="margin-left: 4px;">1 / 3</span>
+      </div>
+
+      <!-- Adım 1/3: Mektup Yaz -->
+      <div id="step-1-box" style="display: flex; flex-direction: column; gap: 12px;">
+        <div class="paper-card">
+          <div class="paper-to" id="paper-greeting">Sevgili Asya,</div>
+          <textarea
+            class="ruled-textarea"
+            id="msg-input"
+            maxlength="1000"
+            placeholder="Sıcak bir şeyler yaz..."
+          ></textarea>
+          <div class="paper-from-row">
+            <div style="display: flex; align-items: center; gap: 6px; flex: 1;">
+              <span>Kimden:</span>
+              <input
+                type="text"
+                class="paper-from-input"
+                id="sender-input"
+                maxlength="32"
+                placeholder="Adın"
+              />
+            </div>
+            <span class="char-count" id="char-counter">0/1000</span>
+          </div>
         </div>
-        <div style="margin-top:12px" class="pill-row">
-          <button class="chip-btn active" id="privacy-chip" type="button">🌐 Ağaçta görünür</button>
-          <button class="chip-btn" id="private-chip" type="button">🔒 Özel not</button>
+
+        <div class="toggle-row">
+          <div>
+            <div style="font-size: 14px; font-weight: 700;">İsmimi gizle</div>
+            <div class="toggle-sub">Anonim olarak imzalanır.</div>
+          </div>
+          <button class="switch-btn" id="hide-name-switch" type="button" aria-label="İsmimi gizle"></button>
         </div>
-        <div class="song-gift-box" style="margin-top:12px">
-          <div><div style="font-size:13px;font-weight:700">🎵 Carol of the Bells</div><div style="font-size:12px;color:var(--muted)">Mesajla birlikte şarkı çalsın</div></div>
-          <button class="chip-btn active" id="attach-song-btn" type="button">✓ Eklendi</button>
+
+        <div class="toggle-row">
+          <div>
+            <div style="font-size: 14px; font-weight: 700;">Herkes okuyabilsin</div>
+            <div class="toggle-sub">Bu dilek ağaçta açıldığında okunur.</div>
+          </div>
+          <button class="switch-btn on" id="public-msg-switch" type="button" aria-label="Herkes okuyabilsin"></button>
         </div>
-        <div style="margin-top:14px;display:flex;gap:8px">
-          <button class="secondary-btn" id="back-to-step-1-btn" type="button" style="width:auto">← Geri</button>
-          <button class="primary-btn" id="send-message-btn" type="button">Mesajı gönder →</button>
+
+        <button class="red-btn" id="go-step-2-btn" type="button">Süs seç →</button>
+      </div>
+
+      <!-- Adım 2/3: Süs Seç -->
+      <div id="step-2-box" style="display: none; flex-direction: column; gap: 12px;">
+        <div class="selected-preview-box">
+          <div class="selected-big-emoji" id="selected-orn-emoji">⛄</div>
+          <div class="selected-label" id="selected-orn-name">Kardan adam</div>
+        </div>
+
+        <div class="free-ornaments-panel">
+          <div class="free-header">
+            <span>Ücretsiz</span>
+            <span>6 klasik</span>
+          </div>
+          <div class="free-grid" id="orn-grid"></div>
+        </div>
+
+        <button class="red-btn" id="go-step-3-btn" type="button">Mesajı önizle →</button>
+      </div>
+
+      <!-- Adım 3/3: Önizleme ve Gönder -->
+      <div id="step-3-box" style="display: none; flex-direction: column; gap: 12px;">
+        <div class="target-pill" id="target-tree-pill">❄️ Asya'nın ağacına</div>
+
+        <div class="paper-card">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
+            <div class="paper-to" id="preview-greeting">Sevgili Asya,</div>
+            <span style="font-size: 28px;" id="preview-orn-emoji">⛄</span>
+          </div>
+          <div id="preview-msg-body" style="font-size: 15px; line-height: 1.5; white-space: pre-wrap;"></div>
+          <div class="paper-from-row">
+            <span id="preview-sender-text">Kimden: Anonim</span>
+          </div>
+        </div>
+
+        <div class="meta-chips">
+          <span class="meta-chip" id="preview-sender-chip">👤 Kimden: Anonim</span>
+          <span class="meta-chip" id="preview-vis-chip">🌐 Açıldığında herkese açık</span>
+        </div>
+
+        <div class="song-row-card">
+          <div>
+            <div style="font-size: 14px; font-weight: 700;">🎵 Carol of the Bells</div>
+            <div class="toggle-sub">Mesaj asılırken şarkı çalsın</div>
+          </div>
+          <button class="mini-btn active-song" id="include-song-btn" type="button">Eklendi ✓</button>
+        </div>
+
+        <button class="red-btn" id="submit-msg-btn" type="button">Mesajı gönder →</button>
+      </div>
+
+      <!-- Mesaj Asılıyor -->
+      <div id="step-hanging-box" style="display: none;">
+        <div class="center-status">
+          <div class="ring-loader"></div>
+          <div style="font-size: 20px; font-weight: 800;">Mesajın asılıyor...</div>
+          <div style="font-size: 14px; color: var(--muted);">Bu sayfayı açık tut.</div>
         </div>
       </div>
-      <div id="msg-step-hanging" style="display:none"><div class="status-center"><div class="spinner"></div><div style="font-size:17px;font-weight:700">Mesajın asılıyor...</div><div style="font-size:13px;color:var(--muted)">Bu sayfayı açık tut.</div></div></div>
-      <div id="msg-step-done" style="display:none"><div class="status-center"><div style="font-size:46px">❄️</div><div style="font-size:18px;font-weight:800">Mesajın ağaca asıldı.</div><div style="font-size:13px;color:var(--muted)" id="done-subtext">Süs ağacın üzerinde yerini aldı.</div><button class="primary-btn" id="back-to-tree-btn" type="button">Ağaca geri dön</button></div></div>
+
+      <!-- Mesaj Ağaca Asıldı -->
+      <div id="step-done-box" style="display: none;">
+        <div class="center-status">
+          <div style="font-size: 52px;" id="done-orn-emoji">⛄</div>
+          <div style="font-size: 22px; font-weight: 800;">Mesajın ağaca asıldı.</div>
+          <div style="font-size: 14px; color: var(--muted);" id="done-desc">
+            Mesajlar açıldığında herkes okuyabilir.
+          </div>
+          <button class="red-btn" id="done-return-btn" type="button" style="margin-top: 8px;">
+            Asya'nın ağacına geri dön
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="modal-backdrop" id="read-modal" role="dialog" aria-modal="true">
-    <div class="modal-card">
-      <div class="modal-top"><h2 class="modal-title" id="read-modal-title">Asılı Mesaj</h2><button class="icon-btn" id="close-read-modal" type="button">✕</button></div>
-      <div class="read-card"><div class="read-meta"><span id="read-sender">Kimden: Anonim</span><span id="read-date"></span></div><div class="read-body" id="read-body"></div></div>
-      <button class="secondary-btn" id="close-read-btn" type="button">Kapat</button>
+  <!-- Mesaj Okuma Ekranı -->
+  <div class="overlay-screen" id="read-screen">
+    <div class="flow-container">
+      <div class="flow-header">
+        <div class="flow-title" id="read-title">Asılı Mesaj</div>
+        <button class="top-pill" id="close-read-screen" type="button">✕</button>
+      </div>
+      <div class="paper-card">
+        <div class="paper-to" id="read-to">Sevgili Asya,</div>
+        <div id="read-content" style="font-size: 15px; line-height: 1.55; white-space: pre-wrap;"></div>
+        <div class="paper-from-row">
+          <span id="read-from">Kimden: Anonim</span>
+          <span class="char-count" id="read-time"></span>
+        </div>
+      </div>
+      <button class="red-btn" id="read-back-btn" type="button">Ağaca geri dön</button>
     </div>
   </div>
 
-  <div class="modal-backdrop" id="customize-modal" role="dialog" aria-modal="true">
-    <div class="modal-card">
-      <div class="modal-top"><h2 class="modal-title" id="custom-modal-title">Ağacı Düzenle</h2><button class="icon-btn" id="close-custom-modal" type="button">✕</button></div>
-      <div><label class="section-label" for="custom-tree-name">Ağaç adı</label><input class="text-input" id="custom-tree-name" type="text" maxlength="32" placeholder="Örn: Asya'nın Ağacı" /></div>
-      <div><label class="section-label" for="custom-topper">Tepe süsü</label><select class="select-input" id="custom-topper"><option value="⭐">Yıldız (⭐)</option><option value="❄️">Kar Tanesi (❄️)</option><option value="🎀">Kurdele (🎀)</option></select></div>
-      <div><label class="section-label" for="custom-theme">Arka plan</label><select class="select-input" id="custom-theme"><option value="klasik">Klasik Kış</option><option value="gece">Gece Mavisi</option><option value="karli">Karlı Vadi</option></select></div>
-      <button class="primary-btn" id="save-custom-btn" type="button">Ağacımı kaydet →</button>
+  <!-- Ağaç Ayarları Ekranı -->
+  <div class="overlay-screen" id="custom-screen">
+    <div class="flow-container">
+      <div class="flow-header">
+        <div class="flow-title" id="custom-title">Ağacı Düzenle</div>
+        <button class="top-pill" id="close-custom-screen" type="button">✕</button>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="input-tree-name">Başlık</label>
+        <input class="dark-input" id="input-tree-name" type="text" maxlength="32" />
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="select-topper">Tepe süsü</label>
+        <select class="dark-select" id="select-topper">
+          <option value="🔔">Çan (🔔)</option>
+          <option value="⭐">Yıldız (⭐)</option>
+          <option value="❄️">Kar Tanesi (❄️)</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="select-theme">Arka plan tonu</label>
+        <select class="dark-select" id="select-theme">
+          <option value="klasik">Klasik Kış</option>
+          <option value="gece">Gece Mavisi</option>
+          <option value="karli">Karlı Vadi</option>
+        </select>
+      </div>
+
+      <button class="red-btn" id="save-custom-btn" type="button">Kaydet →</button>
     </div>
   </div>
 
   <script>
-    const STORAGE_KEY_MSGS = "asya_agac_mesajlar_v1";
-    const STORAGE_KEY_CFG = "asya_agac_ayar_v1";
-    const YT_VIDEO_ID = "Z3bNAvaQihA";
-    const ORNAMENTS = [
-      { emoji: "❄️", name: "Kar Tanesi" }, { emoji: "🔔", name: "Çan" },
-      { emoji: "🎀", name: "Kurdele" }, { emoji: "🕯️", name: "Mum" },
-      { emoji: "🤍", name: "Beyaz Küre" }, { emoji: "✨", name: "Işıltı" }
-    ];
-    const SLOTS = [
-      {left:"46%",top:"24%"},{left:"56%",top:"28%"},{left:"38%",top:"42%"},{left:"50%",top:"40%"},
-      {left:"62%",top:"44%"},{left:"33%",top:"61%"},{left:"46%",top:"58%"},{left:"58%",top:"57%"},
-      {left:"68%",top:"63%"},{left:"40%",top:"73%"},{left:"53%",top:"72%"},{left:"63%",top:"74%"}
-    ];
-    let config = { name:"Asya'nın Ağacı", topper:"⭐", theme:"klasik" };
-    let messages = [], selectedOrnament = ORNAMENTS[0].emoji, isPrivateMsg = false, songAttached = true;
-    let ytPlayer = null, ytReady = false, isPlaying = false, isMuted = false;
+    const KEY_MSGS = "asya_agaci_mesajlar_v2";
+    const KEY_CFG = "asya_agaci_ayar_v2";
+    const YT_ID = "Z3bNAvaQihA";
 
-    function loadState() {
+    const FREE_ORNAMENTS = [
+      { emoji: "🔴", name: "Kırmızı top" },
+      { emoji: "🔵", name: "Mavi top" },
+      { emoji: "🎀", name: "Kurdele" },
+      { emoji: "🧸", name: "Kurabiye" },
+      { emoji: "🧦", name: "Çorap" },
+      { emoji: "⛄", name: "Kardan adam" }
+    ];
+
+    const TREE_SPOTS = [
+      { left: "50%", top: "27%" },
+      { left: "36%", top: "39%" },
+      { left: "50%", top: "38%" },
+      { left: "64%", top: "40%" },
+      { left: "29%", top: "52%" },
+      { left: "44%", top: "51%" },
+      { left: "58%", top: "52%" },
+      { left: "71%", top: "54%" },
+      { left: "35%", top: "66%" },
+      { left: "50%", top: "65%" },
+      { left: "64%", top: "67%" },
+      { left: "43%", top: "77%" }
+    ];
+
+    let treeCfg = {
+      name: "Asya'nın Ağacı",
+      topper: "🔔",
+      theme: "klasik"
+    };
+
+    let msgList = [];
+    let chosenOrn = FREE_ORNAMENTS[5];
+    let hideSender = false;
+    let isPublic = true;
+    let withSong = true;
+
+    let player = null;
+    let playerReady = false;
+    let playing = false;
+    let muted = false;
+
+    function loadAll() {
       try {
-        const savedCfg = localStorage.getItem(STORAGE_KEY_CFG);
-        if (savedCfg) config = {...config, ...JSON.parse(savedCfg)};
-        const savedMsgs = localStorage.getItem(STORAGE_KEY_MSGS);
-        if (savedMsgs) messages = JSON.parse(savedMsgs);
-        if (!Array.isArray(messages)) messages = [];
-      } catch (e) { messages = []; }
+        const c = localStorage.getItem(KEY_CFG);
+        if (c) treeCfg = { ...treeCfg, ...JSON.parse(c) };
+        const m = localStorage.getItem(KEY_MSGS);
+        if (m) msgList = JSON.parse(m);
+      } catch (e) {
+        msgList = [];
+      }
     }
-    function saveState() {
+
+    function saveAll() {
       try {
-        localStorage.setItem(STORAGE_KEY_CFG, JSON.stringify(config));
-        localStorage.setItem(STORAGE_KEY_MSGS, JSON.stringify(messages));
-      } catch (e) { alert("Tarayıcı depolama alanına kaydedilemedi."); }
+        localStorage.setItem(KEY_CFG, JSON.stringify(treeCfg));
+        localStorage.setItem(KEY_MSGS, JSON.stringify(msgList));
+      } catch (e) {}
     }
-    function applyConfig() {
-      document.title = config.name;
-      document.getElementById("header-tree-name").textContent = config.name;
-      document.getElementById("main-tree-title").textContent = config.name;
-      document.getElementById("tree-topper").textContent = config.topper;
-      const treeName = config.name.replace(/['’]nın Ağacı$/i, "").replace(/['’]in Ağacı$/i, "");
-      document.getElementById("letter-greeting").textContent = `Sevgili ${treeName || "Asya"},`;
-      document.body.classList.remove("theme-gece","theme-karli");
-      if (config.theme === "gece") document.body.classList.add("theme-gece");
-      if (config.theme === "karli") document.body.classList.add("theme-karli");
+
+    function applyTreeView() {
+      document.title = treeCfg.name;
+      document.getElementById("tree-title").textContent = treeCfg.name;
+      document.getElementById("tree-topper").textContent = treeCfg.topper;
+      document.getElementById("target-tree-pill").textContent = `❄️ ${treeCfg.name}`;
+      document.getElementById("done-return-btn").textContent = `${treeCfg.name}'na geri dön`;
+
+      const shortName = treeCfg.name.replace(/'nın Ağacı$/i, "").trim() || "Asya";
+      document.getElementById("paper-greeting").textContent = `Sevgili ${shortName},`;
+      document.getElementById("preview-greeting").textContent = `Sevgili ${shortName},`;
+      document.getElementById("read-to").textContent = `Sevgili ${shortName},`;
+
+      document.body.classList.remove("theme-gece", "theme-karli");
+      if (treeCfg.theme === "gece") document.body.classList.add("theme-gece");
+      if (treeCfg.theme === "karli") document.body.classList.add("theme-karli");
     }
-    function escapeHtml(str) {
-      return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
-    }
-    function renderTree() {
+
+    function renderOrnamentsOnTree() {
       const layer = document.getElementById("ornaments-layer");
-      document.getElementById("message-count-badge").textContent = `${messages.length} mesaj`;
+      document.getElementById("msg-count-label").textContent = `${msgList.length} mesaj`;
       layer.innerHTML = "";
-      messages.forEach((msg, idx) => {
-        const slot = SLOTS[idx % SLOTS.length], btn = document.createElement("button");
-        btn.type = "button"; btn.className = "ornament-pin"; btn.style.left = slot.left; btn.style.top = slot.top;
-        btn.title = `${msg.sender} tarafından bırakıldı`;
-        btn.innerHTML = `<span class="ornament-emoji">${escapeHtml(msg.ornament)}</span><span class="ornament-sender">${escapeHtml(msg.sender)}</span>`;
-        btn.addEventListener("click", () => openReadModal(msg));
+
+      msgList.forEach((item, idx) => {
+        const spot = TREE_SPOTS[idx % TREE_SPOTS.length];
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "ornament-item";
+        btn.style.left = spot.left;
+        btn.style.top = spot.top;
+        btn.innerHTML = `
+          <span class="ornament-icon">${item.emoji}</span>
+          <span class="ornament-tag">${escapeText(item.sender)}</span>
+        `;
+        btn.addEventListener("click", () => showMessageReader(item));
         layer.appendChild(btn);
       });
     }
-    function openReadModal(msg) {
-      document.getElementById("read-modal-title").textContent = `${msg.ornament} ${msg.sender}`;
-      document.getElementById("read-sender").textContent = `Kimden: ${msg.sender}`;
-      document.getElementById("read-date").textContent = msg.date || "";
-      document.getElementById("read-body").textContent = msg.isPrivate ? "Bu not özel olarak işaretlendi." : msg.text;
-      document.getElementById("read-modal").classList.add("active");
-    }
-    function renderOrnamentPicker() {
-      const picker = document.getElementById("ornament-picker"); picker.innerHTML = "";
-      ORNAMENTS.forEach(item => {
-        const btn = document.createElement("button"); btn.type = "button";
-        btn.className = "choice-box" + (item.emoji === selectedOrnament ? " selected" : "");
-        btn.textContent = item.emoji; btn.title = item.name;
-        btn.addEventListener("click", () => { selectedOrnament = item.emoji; renderOrnamentPicker(); });
-        picker.appendChild(btn);
-      });
-    }
-    function setMessageStep(stepName) {
-      ["1","2","hanging","done"].forEach(step => {
-        const id = step === "1" ? "msg-step-1" : step === "2" ? "msg-step-2" : `msg-step-${step}`;
-        document.getElementById(id).style.display = stepName === step ? "block" : "none";
-      });
-      document.getElementById("step-pill-1").classList.toggle("done", true);
-      document.getElementById("step-pill-2").classList.toggle("done", ["2","hanging","done"].includes(stepName));
-    }
-    function openMessageModal() {
-      selectedOrnament = ORNAMENTS[0].emoji; isPrivateMsg = false; songAttached = true;
-      document.getElementById("letter-text").value = "";
-      document.getElementById("letter-sender").value = "Anonim";
-      document.getElementById("privacy-chip").classList.add("active");
-      document.getElementById("private-chip").classList.remove("active");
-      document.getElementById("attach-song-btn").classList.add("active");
-      document.getElementById("attach-song-btn").textContent = "✓ Eklendi";
-      renderOrnamentPicker(); setMessageStep("1"); document.getElementById("message-modal").classList.add("active");
-    }
-    function closeMessageModal() { document.getElementById("message-modal").classList.remove("active"); }
 
-    function playCarol() {
-      document.getElementById("yt-player-wrap").classList.add("open");
-      if (ytReady && ytPlayer && typeof ytPlayer.playVideo === "function") {
-        ytPlayer.unMute(); isMuted = false;
-        document.getElementById("toggle-mute-btn").textContent = "🔊";
-        ytPlayer.playVideo(); isPlaying = true;
-        document.getElementById("toggle-play-btn").textContent = "❚❚ Duraklat";
-        document.getElementById("music-status").textContent = "Carol of the Bells çalıyor";
-      } else document.getElementById("music-status").textContent = "Oynatıcı başlatılıyor...";
+    function escapeText(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
     }
-    function pauseCarol() {
-      if (ytReady && ytPlayer && typeof ytPlayer.pauseVideo === "function") ytPlayer.pauseVideo();
-      isPlaying = false; document.getElementById("toggle-play-btn").textContent = "▶ Oynat";
-      document.getElementById("music-status").textContent = "Duraklatıldı";
+
+    function showMessageReader(item) {
+      document.getElementById("read-title").textContent = `${item.emoji} ${item.sender}`;
+      document.getElementById("read-content").textContent = item.isPublic
+        ? item.text
+        : "Bu not özel olarak işaretlendi.";
+      document.getElementById("read-from").textContent = `Kimden: ${item.sender}`;
+      document.getElementById("read-time").textContent = item.date || "";
+      document.getElementById("read-screen").classList.add("active");
     }
-    function initYouTubePlayer() {
-      const tag = document.createElement("script"); tag.src = "https://www.youtube.com/iframe_api";
-      document.head.appendChild(tag);
-      window.onYouTubeIframeAPIReady = function() {
-        ytPlayer = new YT.Player("yt-player", {
-          height:"170", width:"100%", videoId:YT_VIDEO_ID,
-          playerVars:{autoplay:0,loop:1,playlist:YT_VIDEO_ID,rel:0,playsinline:1},
-          events:{
-            onReady:function(event) { ytReady = true; event.target.mute(); isMuted = true; document.getElementById("toggle-mute-btn").textContent = "🔇"; },
-            onStateChange:function(event) {
-              if (event.data === YT.PlayerState.PLAYING) {
-                isPlaying = true; document.getElementById("toggle-play-btn").textContent = "❚❚ Duraklat";
-                if (!ytPlayer.isMuted()) document.getElementById("music-status").textContent = "Carol of the Bells çalıyor";
-              } else if (event.data === YT.PlayerState.PAUSED) {
-                isPlaying = false; document.getElementById("toggle-play-btn").textContent = "▶ Oynat";
+
+    function renderOrnamentChoices() {
+      const grid = document.getElementById("orn-grid");
+      grid.innerHTML = "";
+      document.getElementById("selected-orn-emoji").textContent = chosenOrn.emoji;
+      document.getElementById("selected-orn-name").textContent = chosenOrn.name;
+
+      FREE_ORNAMENTS.forEach((orn) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "orn-select-btn" + (orn.emoji === chosenOrn.emoji ? " picked" : "");
+        b.textContent = orn.emoji;
+        b.addEventListener("click", () => {
+          chosenOrn = orn;
+          renderOrnamentChoices();
+        });
+        grid.appendChild(b);
+      });
+    }
+
+    function setFlowStep(step) {
+      document.getElementById("step-1-box").style.display = step === "1" ? "flex" : "none";
+      document.getElementById("step-2-box").style.display = step === "2" ? "flex" : "none";
+      document.getElementById("step-3-box").style.display = step === "3" ? "flex" : "none";
+      document.getElementById("step-hanging-box").style.display = step === "hanging" ? "block" : "none";
+      document.getElementById("step-done-box").style.display = step === "done" ? "block" : "none";
+
+      const isStepBarVisible = step === "1" || step === "2" || step === "3";
+      document.getElementById("step-indicator").style.display = isStepBarVisible ? "flex" : "none";
+      document.getElementById("flow-back-btn").style.visibility = isStepBarVisible ? "visible" : "hidden";
+
+      document.getElementById("line-1").classList.toggle("on", step === "1" || step === "2" || step === "3");
+      document.getElementById("line-2").classList.toggle("on", step === "2" || step === "3");
+      document.getElementById("line-3").classList.toggle("on", step === "3");
+
+      if (step === "1") document.getElementById("step-num-text").textContent = "1 / 3";
+      if (step === "2") document.getElementById("step-num-text").textContent = "2 / 3";
+      if (step === "3") document.getElementById("step-num-text").textContent = "3 / 3";
+    }
+
+    function openFlow() {
+      chosenOrn = FREE_ORNAMENTS[5];
+      hideSender = false;
+      isPublic = true;
+      withSong = true;
+      document.getElementById("msg-input").value = "";
+      document.getElementById("sender-input").value = "";
+      document.getElementById("char-counter").textContent = "0/1000";
+      document.getElementById("hide-name-switch").classList.remove("on");
+      document.getElementById("public-msg-switch").classList.add("on");
+      document.getElementById("include-song-btn").classList.add("active-song");
+      document.getElementById("include-song-btn").textContent = "Eklendi ✓";
+      renderOrnamentChoices();
+      setFlowStep("1");
+      document.getElementById("msg-flow-screen").classList.add("active");
+    }
+
+    function closeFlow() {
+      document.getElementById("msg-flow-screen").classList.remove("active");
+    }
+
+    function getEffectiveSender() {
+      if (hideSender) return "Anonim";
+      const typed = document.getElementById("sender-input").value.trim();
+      return typed || "Anonim";
+    }
+
+    function startSong() {
+      if (playerReady && player && typeof player.playVideo === "function") {
+        player.unMute();
+        muted = false;
+        document.getElementById("mute-btn").textContent = "🔊";
+        player.playVideo();
+        playing = true;
+        document.getElementById("play-pause-btn").textContent = "❚❚ Duraklat";
+        document.getElementById("music-status-text").textContent = "Carol of the Bells çalıyor";
+      } else {
+        document.getElementById("yt-box").classList.add("open");
+        document.getElementById("music-status-text").textContent = "Şarkı hazırlanıyor...";
+      }
+    }
+
+    function stopSong() {
+      if (playerReady && player && typeof player.pauseVideo === "function") {
+        player.pauseVideo();
+      }
+      playing = false;
+      document.getElementById("play-pause-btn").textContent = "▶ Çal";
+      document.getElementById("music-status-text").textContent = "Duraklatıldı";
+    }
+
+    function loadYouTube() {
+      const s = document.createElement("script");
+      s.src = "https://www.youtube.com/iframe_api";
+      document.head.appendChild(s);
+
+      window.onYouTubeIframeAPIReady = function () {
+        player = new YT.Player("yt-player", {
+          height: "155",
+          width: "100%",
+          videoId: YT_ID,
+          playerVars: {
+            autoplay: 1,
+            loop: 1,
+            playlist: YT_ID,
+            rel: 0,
+            playsinline: 1
+          },
+          events: {
+            onReady: function (ev) {
+              playerReady = true;
+              ev.target.mute();
+              muted = true;
+              document.getElementById("mute-btn").textContent = "🔇";
+              ev.target.playVideo();
+            },
+            onStateChange: function (ev) {
+              if (ev.data === YT.PlayerState.PLAYING) {
+                playing = true;
+                document.getElementById("play-pause-btn").textContent = "❚❚ Duraklat";
+                if (!player.isMuted()) {
+                  document.getElementById("music-status-text").textContent = "Carol of the Bells çalıyor";
+                }
+              } else if (ev.data === YT.PlayerState.PAUSED) {
+                playing = false;
+                document.getElementById("play-pause-btn").textContent = "▶ Çal";
               }
             }
           }
         });
       };
     }
-    function initWhiteSnow() {
-      const canvas = document.getElementById("snow-canvas"), ctx = canvas.getContext("2d");
-      let width = canvas.width = window.innerWidth, height = canvas.height = window.innerHeight;
-      window.addEventListener("resize", () => { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; });
-      const flakes = Array.from({length:75}, () => ({x:Math.random()*width,y:Math.random()*height,r:1.5+Math.random()*3.2,vy:.7+Math.random()*1.6,vx:-.4+Math.random()*.8,alpha:.55+Math.random()*.45}));
-      function draw() {
-        ctx.clearRect(0,0,width,height);
-        for (const f of flakes) {
-          f.y += f.vy; f.x += f.vx;
-          if (f.y > height+10) { f.y = -10; f.x = Math.random()*width; }
-          if (f.x > width+10) f.x = -10; if (f.x < -10) f.x = width+10;
-          ctx.beginPath(); ctx.arc(f.x,f.y,f.r,0,Math.PI*2); ctx.fillStyle = `rgba(255,255,255,${f.alpha})`; ctx.fill();
+
+    function runWhiteSnow() {
+      const canvas = document.getElementById("snow-canvas");
+      const ctx = canvas.getContext("2d");
+      let w = (canvas.width = window.innerWidth);
+      let h = (canvas.height = window.innerHeight);
+
+      window.addEventListener("resize", () => {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      });
+
+      const particles = Array.from({ length: 80 }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: 1.5 + Math.random() * 3.2,
+        vy: 0.7 + Math.random() * 1.6,
+        vx: -0.4 + Math.random() * 0.8,
+        a: 0.55 + Math.random() * 0.45
+      }));
+
+      function frame() {
+        ctx.clearRect(0, 0, w, h);
+        for (const p of particles) {
+          p.y += p.vy;
+          p.x += p.vx;
+          if (p.y > h + 10) {
+            p.y = -10;
+            p.x = Math.random() * w;
+          }
+          if (p.x > w + 10) p.x = -10;
+          if (p.x < -10) p.x = w + 10;
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255, 255, 255, ${p.a})`;
+          ctx.fill();
         }
-        requestAnimationFrame(draw);
+        requestAnimationFrame(frame);
       }
-      draw();
+      frame();
     }
 
-    document.getElementById("open-message-btn").addEventListener("click", openMessageModal);
-    document.getElementById("close-message-modal").addEventListener("click", closeMessageModal);
-    document.getElementById("to-step-2-btn").addEventListener("click", () => setMessageStep("2"));
-    document.getElementById("back-to-step-1-btn").addEventListener("click", () => setMessageStep("1"));
-    document.getElementById("privacy-chip").addEventListener("click", () => { isPrivateMsg=false; document.getElementById("privacy-chip").classList.add("active"); document.getElementById("private-chip").classList.remove("active"); });
-    document.getElementById("private-chip").addEventListener("click", () => { isPrivateMsg=true; document.getElementById("private-chip").classList.add("active"); document.getElementById("privacy-chip").classList.remove("active"); });
-    document.getElementById("attach-song-btn").addEventListener("click", () => {
-      songAttached = !songAttached; const btn = document.getElementById("attach-song-btn");
-      btn.classList.toggle("active",songAttached); btn.textContent = songAttached ? "✓ Eklendi" : "+ Ekle";
+    document.getElementById("start-msg-btn").addEventListener("click", openFlow);
+    document.getElementById("flow-close-btn").addEventListener("click", closeFlow);
+
+    document.getElementById("msg-input").addEventListener("input", (e) => {
+      document.getElementById("char-counter").textContent = `${e.target.value.length}/1000`;
     });
-    document.getElementById("send-message-btn").addEventListener("click", () => {
-      const rawText = document.getElementById("letter-text").value.trim();
-      const sender = document.getElementById("letter-sender").value.trim() || "Anonim";
-      if (!rawText) { alert("Lütfen önce mesajını yaz."); return; }
-      setMessageStep("hanging");
+
+    document.getElementById("hide-name-switch").addEventListener("click", function () {
+      hideSender = !hideSender;
+      this.classList.toggle("on", hideSender);
+    });
+
+    document.getElementById("public-msg-switch").addEventListener("click", function () {
+      isPublic = !isPublic;
+      this.classList.toggle("on", isPublic);
+    });
+
+    document.getElementById("go-step-2-btn").addEventListener("click", () => {
+      const txt = document.getElementById("msg-input").value.trim();
+      if (!txt) {
+        alert("Lütfen önce mesajını yaz.");
+        return;
+      }
+      setFlowStep("2");
+    });
+
+    document.getElementById("go-step-3-btn").addEventListener("click", () => {
+      const sender = getEffectiveSender();
+      const bodyText = document.getElementById("msg-input").value.trim();
+      document.getElementById("preview-orn-emoji").textContent = chosenOrn.emoji;
+      document.getElementById("preview-msg-body").textContent = bodyText;
+      document.getElementById("preview-sender-text").textContent = `Kimden: ${sender}`;
+      document.getElementById("preview-sender-chip").textContent = `👤 Kimden: ${sender}`;
+      document.getElementById("preview-vis-chip").textContent = isPublic
+        ? "🌐 Açıldığında herkese açık"
+        : "🔒 Özel not";
+      setFlowStep("3");
+    });
+
+    document.getElementById("flow-back-btn").addEventListener("click", () => {
+      if (document.getElementById("step-2-box").style.display !== "none") {
+        setFlowStep("1");
+      } else if (document.getElementById("step-3-box").style.display !== "none") {
+        setFlowStep("2");
+      }
+    });
+
+    document.getElementById("include-song-btn").addEventListener("click", function () {
+      withSong = !withSong;
+      this.classList.toggle("active-song", withSong);
+      this.textContent = withSong ? "Eklendi ✓" : "+ Ekle";
+    });
+
+    document.getElementById("submit-msg-btn").addEventListener("click", () => {
+      const sender = getEffectiveSender();
+      const bodyText = document.getElementById("msg-input").value.trim();
+      setFlowStep("hanging");
+
       setTimeout(() => {
-        const nowStr = new Date().toLocaleDateString("tr-TR",{day:"2-digit",month:"short"});
-        messages.push({ornament:selectedOrnament,text:rawText,sender,isPrivate:isPrivateMsg,date:nowStr});
-        saveState(); renderTree();
-        document.getElementById("done-subtext").textContent = isPrivateMsg ? "Özel notun süs olarak ağaca asıldı." : "Mesajın süs olarak ağaca asıldı.";
-        setMessageStep("done"); if (songAttached) playCarol();
-      },900);
-    });
-    document.getElementById("back-to-tree-btn").addEventListener("click",closeMessageModal);
-    document.getElementById("close-read-modal").addEventListener("click",() => document.getElementById("read-modal").classList.remove("active"));
-    document.getElementById("close-read-btn").addEventListener("click",() => document.getElementById("read-modal").classList.remove("active"));
+        const dateStr = new Date().toLocaleDateString("tr-TR", {
+          day: "2-digit",
+          month: "short"
+        });
+        msgList.push({
+          emoji: chosenOrn.emoji,
+          text: bodyText,
+          sender,
+          isPublic,
+          date: dateStr
+        });
+        saveAll();
+        renderOrnamentsOnTree();
 
-    function openCustomizeModal(titleText) {
-      document.getElementById("custom-modal-title").textContent = titleText;
-      document.getElementById("custom-tree-name").value = config.name;
-      document.getElementById("custom-topper").value = config.topper;
-      document.getElementById("custom-theme").value = config.theme;
-      document.getElementById("customize-modal").classList.add("active");
+        document.getElementById("done-orn-emoji").textContent = chosenOrn.emoji;
+        document.getElementById("done-desc").textContent = isPublic
+          ? "Mesajlar açıldığında herkes okuyabilir."
+          : "Özel notun süs olarak ağaca asıldı.";
+        setFlowStep("done");
+
+        if (withSong) {
+          startSong();
+        }
+      }, 900);
+    });
+
+    document.getElementById("done-return-btn").addEventListener("click", closeFlow);
+
+    document.getElementById("close-read-screen").addEventListener("click", () => {
+      document.getElementById("read-screen").classList.remove("active");
+    });
+    document.getElementById("read-back-btn").addEventListener("click", () => {
+      document.getElementById("read-screen").classList.remove("active");
+    });
+
+    function openCustomModal(title) {
+      document.getElementById("custom-title").textContent = title;
+      document.getElementById("input-tree-name").value = treeCfg.name;
+      document.getElementById("select-topper").value = treeCfg.topper;
+      document.getElementById("select-theme").value = treeCfg.theme;
+      document.getElementById("custom-screen").classList.add("active");
     }
-    document.getElementById("open-customize-btn").addEventListener("click",() => openCustomizeModal("Ağacı Düzenle"));
-    document.getElementById("open-new-tree-btn").addEventListener("click",() => openCustomizeModal("Yeni Ağaç Oluştur"));
-    document.getElementById("close-custom-modal").addEventListener("click",() => document.getElementById("customize-modal").classList.remove("active"));
-    document.getElementById("save-custom-btn").addEventListener("click",() => {
-      const nextName = document.getElementById("custom-tree-name").value.trim();
-      config.name = nextName || "Asya'nın Ağacı"; config.topper = document.getElementById("custom-topper").value; config.theme = document.getElementById("custom-theme").value;
-      saveState(); applyConfig(); document.getElementById("customize-modal").classList.remove("active");
+
+    document.getElementById("open-custom-btn").addEventListener("click", () => {
+      openCustomModal("Ağacı Düzenle");
     });
-    document.getElementById("toggle-play-btn").addEventListener("click",() => {
-      if (isPlaying && ytPlayer && !ytPlayer.isMuted()) pauseCarol(); else playCarol();
+    document.getElementById("reset-tree-btn").addEventListener("click", () => {
+      openCustomModal("Ağacımı özelleştir");
     });
-    document.getElementById("toggle-mute-btn").addEventListener("click",() => {
-      if (!ytReady || !ytPlayer) { document.getElementById("music-status").textContent = "Müzik oynatıcı yükleniyor..."; return; }
-      if (ytPlayer.isMuted()) {
-        ytPlayer.unMute(); ytPlayer.playVideo(); isMuted=false; isPlaying=true;
-        document.getElementById("toggle-mute-btn").textContent="🔊"; document.getElementById("toggle-play-btn").textContent="❚❚ Duraklat";
-        document.getElementById("music-status").textContent="Carol of the Bells çalıyor";
+    document.getElementById("close-custom-screen").addEventListener("click", () => {
+      document.getElementById("custom-screen").classList.remove("active");
+    });
+
+    document.getElementById("save-custom-btn").addEventListener("click", () => {
+      const val = document.getElementById("input-tree-name").value.trim();
+      treeCfg.name = val || "Asya'nın Ağacı";
+      treeCfg.topper = document.getElementById("select-topper").value;
+      treeCfg.theme = document.getElementById("select-theme").value;
+      saveAll();
+      applyTreeView();
+      document.getElementById("custom-screen").classList.remove("active");
+    });
+
+    document.getElementById("toggle-music-panel-btn").addEventListener("click", () => {
+      document.getElementById("yt-box").classList.toggle("open");
+    });
+
+    document.getElementById("play-pause-btn").addEventListener("click", () => {
+      if (playing && player && !player.isMuted()) {
+        stopSong();
       } else {
-        ytPlayer.mute(); isMuted=true; document.getElementById("toggle-mute-btn").textContent="🔇";
-        document.getElementById("music-status").textContent="Sessize alındı";
+        startSong();
       }
     });
-    document.getElementById("toggle-player-box-btn").addEventListener("click",() => document.getElementById("yt-player-wrap").classList.toggle("open"));
 
-    loadState(); applyConfig(); renderTree(); initWhiteSnow(); initYouTubePlayer();
+    document.getElementById("mute-btn").addEventListener("click", () => {
+      if (!playerReady || !player) return;
+      if (player.isMuted()) {
+        player.unMute();
+        player.playVideo();
+        muted = false;
+        playing = true;
+        document.getElementById("mute-btn").textContent = "🔊";
+        document.getElementById("play-pause-btn").textContent = "❚❚ Duraklat";
+        document.getElementById("music-status-text").textContent = "Carol of the Bells çalıyor";
+      } else {
+        player.mute();
+        muted = true;
+        document.getElementById("mute-btn").textContent = "🔇";
+        document.getElementById("music-status-text").textContent = "Sessize alındı";
+      }
+    });
+
+    document.getElementById("video-toggle-btn").addEventListener("click", () => {
+      document.getElementById("yt-box").classList.toggle("open");
+    });
+
+    document.addEventListener("pointerdown", function firstTap() {
+      if (!playing && playerReady && player) {
+        startSong();
+      }
+      document.removeEventListener("pointerdown", firstTap);
+    });
+
+    loadAll();
+    applyTreeView();
+    renderOrnamentsOnTree();
+    runWhiteSnow();
+    loadYouTube();
   </script>
 </body>
 </html>
+
